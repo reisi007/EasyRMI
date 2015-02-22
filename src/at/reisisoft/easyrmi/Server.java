@@ -7,6 +7,7 @@ package at.reisisoft.easyrmi;
 import java.io.Closeable;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -20,7 +21,7 @@ public class Server<E extends Remote> implements Closeable {
 	private final Registry r;
 	private final String bindName;
 
-	private Server(E stub, Registry r, String bindName) {
+	private Server(final E stub, final Registry r, final String bindName) {
 		this.stub = stub;
 		this.r = r;
 		this.bindName = bindName;
@@ -38,8 +39,8 @@ public class Server<E extends Remote> implements Closeable {
 	 * @throws RemoteException
 	 *             When the underlayuing system throws a {@link RemoteException}
 	 */
-	public static <R extends Remote> Server<R> getServer(R remoteObject,
-			String bindName) throws RemoteException {
+	public static <R extends Remote> Server<R> getServer(final R remoteObject,
+			final String bindName) throws RemoteException {
 
 		final R stub = (R) UnicastRemoteObject.exportObject(remoteObject, 0);
 		Registry registry;
@@ -47,7 +48,7 @@ public class Server<E extends Remote> implements Closeable {
 			registry = LocateRegistry.getRegistry();
 			try {
 				registry.lookup("test");
-			} catch (final NotBoundException e) {
+			} catch (final NoSuchObjectException | NotBoundException e) {
 				// Ignore
 			}
 		} catch (final RemoteException re) {
